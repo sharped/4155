@@ -99,7 +99,6 @@ plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Validation score
 plt.show()
 
 #Plot post-training-test scores
-
 """
 NOT WORKING NOW
 rbf_test_scores = []
