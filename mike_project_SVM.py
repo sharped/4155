@@ -36,7 +36,8 @@ svm_lin = LinearSVC(C=10)
 svm_rbf = SVC(C=10, kernel="rbf", gamma=0.001)
 
 #K-Fold cross-validation sets and training (Leave 1 out)
-kf = ValidationKFold(iris.shape[0], 150, shuffle=True)
+nFolds = 10
+kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
 #SVM does not use validation set so throw it out
 kf_noValid = []
@@ -47,12 +48,14 @@ for train, valid, test in kf:
 #RBF
 train_sizes, train_scores, test_scores = learning_curve(svm_rbf, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 20))
 
-
 #Calc means
 train_scores_mean = np.mean(train_scores, axis=1)
 train_scores_std = np.std(train_scores, axis=1)
 test_scores_mean = np.mean(test_scores, axis=1)
 test_scores_std = np.std(test_scores, axis=1)
+
+#Save the final results for later plotting
+rbf_test_scores = test_scores[19:20, :]
 
 #Plotting
 plt.figure()
@@ -77,6 +80,9 @@ train_scores_std = np.std(train_scores, axis=1)
 test_scores_mean = np.mean(test_scores, axis=1)
 test_scores_std = np.std(test_scores, axis=1)
 
+#Save the final results for later plotting
+linear_test_scores = test_scores[19:20]
+
 #Plotting
 plt.subplot(2, 1, 2)
 plt.title("SVM_Linear")
@@ -90,5 +96,33 @@ plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_me
 plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training score")
 plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Validation score")
 
+plt.show()
+
+#Plot post-training-test scores
+
+"""
+NOT WORKING NOW
+rbf_test_scores = []
+linear_test_scores = []
+for train, test in kf_noValid:
+    print svm_rbf.score(iris[test], y[test])
+    rbf_test_scores.append(svm_rbf.score(iris[test, :], y[test]))
+    linear_test_scores.append(svm_lin.score(iris[test, :, y[test]]))
+
+"""
+
+plt.figure()
+plt.title("Comparison of post-training test Results")
+plt.xlabel("Model")
+plt.ylabel("Score")
+
+rbf_X_indices = np.ones((nFolds))
+linear_X_indices = np.ones((nFolds))*2
+
+x_indices = np.append(rbf_X_indices, linear_X_indices)
+scores = np.append(rbf_test_scores, linear_test_scores)
+
+plt.scatter(x_indices, scores)
 
 plt.show()
+
