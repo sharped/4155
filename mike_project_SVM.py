@@ -5,8 +5,7 @@ from sklearn.cross_validation import KFold
 from sklearn.learning_curve import validation_curve
 from sklearn.learning_curve import learning_curve
 
-iris = np.loadtxt('/Users/God/Documents/School/MachineLearning/Chapter2/iris_data_processed.txt', delimiter=',')
-
+iris = np.loadtxt('irisData.txt', delimiter=',')
 
 #Normalize by subracting mean and diving by standard dev
 iris[:, :4] = iris[:, :4]-iris[:, :4].mean(axis=0)
