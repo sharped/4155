@@ -42,18 +42,28 @@ class pcn:
         errorarray = []
         for n in range(nIterations):
 
-            self.activations = self.pcnfwd(inputs);
+            self.activations = self.pcnfwd(inputs)
             self.weights -= eta*np.dot(np.transpose(inputs), self.activations-targets)
 
-            # Randomise order of inputs
-            #np.random.shuffle(change)
-            #inputs = inputs[change,:]
-            #targets = targets[change,:]
+            scores = np.ones((targets.shape[0], ))
 
-            #errorarray.append(0.5*np.sum((self.activations-targets)**2))
-            #errorarray.append(np.sum(np.where(self.activations != targets, 1, 0)))
-            errorarray.append(0.5*np.sum((self.activations-targets)**2))
-        return errorarray
+            i = 0
+            for t_row, a_row in zip(targets, self.activations):
+                if (t_row[0] != a_row[0]) or (t_row[1] != a_row[1]) or (t_row[2] != a_row[2]):
+                    scores[i] = 0
+
+                i += 1
+
+            score = np.sum(scores)
+
+            errorarray.append(score)
+
+        max_score = np.sum(np.ones((targets.shape[0])))
+
+
+        print score
+
+        return errorarray/max_score
 
         #return self.weights
 
@@ -94,7 +104,7 @@ class pcn:
         return np.where(activations > 0, 1, 0)
 
 
-    def confmat(self,inputs,targets):
+    def confmat(self, inputs, targets):
         """Confusion matrix"""
 
         # Add the inputs that match the bias node

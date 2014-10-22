@@ -34,8 +34,9 @@ y = y[order]
 nFolds = 10
 kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
+#Train models and get lists of errors for each fold
+rbf_train_score = []
 for train_indices, valid_indices, test_indices in kf:
-
 
     train = iris[train_indices]
     train_tgt = targets[train_indices]
@@ -49,18 +50,21 @@ for train_indices, valid_indices, test_indices in kf:
 
     """RBF"""
     rbfnet = rbf.RBF(train, train_tgt, 10, .5)
-    rbfnet.rbftrain(train, train_tgt, 0.00001, 5000, valid, valid_tgt)
+    rbfnet.rbftrain(train, train_tgt, 0.001, 1000, valid, valid_tgt)
 
-    plt.figure()
-    plt.subplot(2, 1, 1)
-    x = range(rbfnet.train_error.__len__())
+    rbf_train_score.append(rbfnet.train_error)
 
-    plt.plot(x, rbfnet.train_error)
 
-    plt.subplot(2, 1, 2)
-    x = range(rbfnet.valid_error.__len__())
 
-    plt.plot(x, rbfnet.valid_error, "r")
-    print rbfnet.valid_error
-    plt.show()
+plt.figure()
+plt.subplot(2, 1, 1)
+x = range(rbfnet.train_error.__len__())
+
+plt.plot(x, rbfnet.train_error)
+
+plt.subplot(2, 1, 2)
+x = range(rbfnet.valid_error.__len__())
+
+plt.plot(x, rbfnet.valid_error, "r")
+plt.show()
 
