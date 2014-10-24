@@ -1,4 +1,4 @@
-import rbf
+import mlp
 import numpy as np
 import matplotlib.pyplot as plt
 from project_dataset_iterators import ValidationKFold
@@ -35,8 +35,8 @@ nFolds = 10
 kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
 #Train models and get lists of errors for each fold
-rbf_train_score = []
-rbf_valid_score = []
+mlp_train_score = []
+mlp_valid_score = []
 for train_indices, valid_indices, test_indices in kf:
 
     train = iris[train_indices]
@@ -48,31 +48,33 @@ for train_indices, valid_indices, test_indices in kf:
     test = iris[test_indices]
     test_tgt = targets[test_indices]
 
-    """RBF"""
-    rbfnet = rbf.RBF(train, train_tgt, 10, .5)
-    rbfnet.rbftrain(train, train_tgt, 0.0001, 1000, valid, valid_tgt)
+    """MLP"""
+    mlpnet = mlp.mlp(train, train_tgt, 20, beta=1, momentum=0.9, outtype='logistic')
+    mlpnet.mlptrain(train, train_tgt, 0.01, 1000, valid, valid_tgt)
 
     #Get training and validation scores on this Fold
-    rbf_train_score.append(rbfnet.train_error)
-    rbf_valid_score.append(rbfnet.valid_error)
+    mlp_train_score.append(mlpnet.train_scores_list)
+    mlp_valid_score.append(mlpnet.valid_scores_list)
 
 
-rbf_train_score = np.array(rbf_train_score)
-rbf_valid_score = np.array(rbf_valid_score)
+mlp_train_score = np.array(mlp_train_score)
+mlp_valid_score = np.array(mlp_valid_score)
 
-mean_rbf_train_score = np.mean(rbf_train_score, axis=0)
-mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
 
-print mean_rbf_train_score.shape
+mean_mlp_train_score = np.mean(mlp_train_score, axis=0)
+mean_mlp_valid_score = np.mean(mlp_valid_score, axis=0)
+
+
 plt.figure()
 plt.title("RBF Network Results")
 plt.xlabel("Number of Iterations")
 plt.ylabel("Score")
 
-x = range(rbfnet.train_error.__len__())
+x = range(mlpnet.train_scores_list.__len__())
 
-plt.plot(x, mean_rbf_train_score, "g", label="Training Score")
-plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
+plt.plot(x, mean_mlp_train_score, "g", label="Training Score")
+plt.plot(x, mean_mlp_valid_score, "r", label="Validation Score")
 
 plt.show()
+
 

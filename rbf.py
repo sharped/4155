@@ -55,31 +55,28 @@ class RBF:
         print "Stopped", new_val_error, old_val_error1, old_val_error2
         return new_val_error
 
-    def rbftrain(self, inputs, targets, eta, niterations, valid, vtargets):
+    def rbftrain(self, inputs, targets, eta, niterations, validation_inputs, vtargets):
         """ Train the thing """
+
+        n_valid_points = validation_inputs.shape[0]
 
         indices = range(self.ndata)
         np.random.shuffle(indices)
 
+        #Set RBF centers at randomly chosen datapoints
         for i in range(self.nRBF):
             self.weights1[:, i] = inputs[indices[i], :]
 
+        #Calculate activations for training and validation sets
+        self.valid_hidden = np.ones((n_valid_points, self.nRBF))
         for i in range(self.nRBF):
             self.hidden[:, i] = np.exp(-np.sum((inputs - np.ones((1, self.nin))*self.weights1[:, i])**2, axis=1)/(2*self.sigma**2))
+            self.valid_hidden[:, i] = np.exp(-np.sum((validation_inputs - np.ones((1, self.nin))*self.weights1[:, i])**2, axis=1)/(2*self.sigma**2))
 
         if self.normalize:
             self.hidden[:, :-1] /= np.transpose(np.ones((1, self.hidden.shape[0]))*self.hidden[:, :-1].sum(axis=1))
 
-        print self.hidden.shape
-
-        self.train_error = self.pcn.pcntrain(self.hidden[:, :], targets, eta, niterations)
-
-
-        #self.hiddenV = np.zeros((valid.shape[0], self.nRBF))
-        #for i in range(self.nRBF):
-         #   self.hiddenV[:, i] = np.exp(-np.sum((valid - np.ones((1, inputs.shape[1]))*self.weights1[:, i])**2, axis=1)/(2*self.sigma**2))
-
-        #self.train_error, self.valid_error = self.pcn.pcntrainValid(self.hidden[:, :], targets, self.hiddenV, vtargets, eta, niterations)
+        self.train_error, self.valid_error = self.pcn.pcntrainValid(self.hidden[:, :], targets, self.valid_hidden, vtargets, eta, niterations)
 
 
     def rbffwd(self, inputs):

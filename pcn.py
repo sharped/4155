@@ -45,53 +45,61 @@ class pcn:
             self.activations = self.pcnfwd(inputs)
             self.weights -= eta*np.dot(np.transpose(inputs), self.activations-targets)
 
+            #Calculate score based on number of errors
             scores = np.ones((targets.shape[0], ))
-
             i = 0
             for t_row, a_row in zip(targets, self.activations):
                 if (t_row[0] != a_row[0]) or (t_row[1] != a_row[1]) or (t_row[2] != a_row[2]):
                     scores[i] = 0
-
                 i += 1
-
             score = np.sum(scores)
-
             errorarray.append(score)
 
         max_score = np.sum(np.ones((targets.shape[0])))
-
-
-        print score
-
+        #return error values obtained during training
         return errorarray/max_score
 
-        #return self.weights
 
     def pcntrainValid(self, inputs, targets, valid, valid_tgt, eta, nIterations):
         """ Train the thing """
         # Add the inputs that match the bias node
         inputs = np.concatenate((inputs, -np.ones((self.nData, 1))), axis=1)
+        valid = np.concatenate((valid, -np.ones((valid.shape[0], 1))), axis=1)
         # Training
         change = range(self.nData)
 
-        errorarray = []
-        verrors = []
+        train_errorarray = []
+        valid_errorarray = []
         for n in range(nIterations):
 
-            self.activations = self.pcnfwd(inputs);
+            self.activations = self.pcnfwd(inputs)
             self.weights -= eta*np.dot(np.transpose(inputs), self.activations-targets)
 
-            vactivations = self.pcnfwd(valid)
+            #Calculate training score based on number of errors
+            train_scores = np.ones((targets.shape[0], ))
+            i = 0
+            for t_row, a_row in zip(targets, self.activations):
+                if (t_row[0] != a_row[0]) or (t_row[1] != a_row[1]) or (t_row[2] != a_row[2]):
+                    train_scores[i] = 0
+                i += 1
+            score = np.sum(train_scores)
+            train_errorarray.append(score)
 
-            # Randomise order of inputs
-            #np.random.shuffle(change)
-            #inputs = inputs[change,:]
-            #targets = targets[change,:]
+            validation_activations = self.pcnfwd(valid)
+            #Calculate validation score based on number of errors
+            valid_scores = np.ones((valid_tgt.shape[0], ))
+            i = 0
+            for t_row, a_row in zip(valid_tgt, validation_activations):
+                if (t_row[0] != a_row[0]) or (t_row[1] != a_row[1]) or (t_row[2] != a_row[2]):
+                    valid_scores[i] = 0
+                i += 1
+            score = np.sum(valid_scores)
+            valid_errorarray.append(score)
 
-            #errorarray.append(np.sum(np.where(self.activations != targets, 1, 0)))
-            errorarray.append(0.5*np.sum((vactivations-valid_tgt)**2))
-            verrors.append(0.5*np.sum(()))
-        return errorarray, verrors
+        max_train_score = np.sum(np.ones((targets.shape[0])))
+        max_valid_score = np.sum(np.ones((valid_tgt.shape[0])))
+        #return error values obtained during training
+        return train_errorarray/max_train_score, valid_errorarray/max_valid_score
 
         #return self.weights
     def pcnfwd(self, inputs):

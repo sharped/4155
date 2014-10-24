@@ -47,7 +47,7 @@ class kmeans:
 
             # Update the cluster centres
             for j in range(self.k):
-                thisCluster = np.where(cluster==j,1,0)
+                thisCluster = np.where(cluster == j, 1, 0)
                 if sum(thisCluster)>0:
                     self.centres[j,:] = np.sum(data*thisCluster,axis=0)/np.sum(thisCluster)
             #plot(data[:,0],data[:,1],'kx')
