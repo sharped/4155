@@ -66,7 +66,7 @@ mean_mlp_valid_score = np.mean(mlp_valid_score, axis=0)
 
 
 plt.figure()
-plt.title("RBF Network Results")
+plt.title("MLP Training and Validation")
 plt.xlabel("Number of Iterations")
 plt.ylabel("Score")
 

@@ -65,7 +65,7 @@ mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
 
 print mean_rbf_train_score.shape
 plt.figure()
-plt.title("RBF Network Results")
+plt.title("RBF Training and Validation")
 plt.xlabel("Number of Iterations")
 plt.ylabel("Score")
 
