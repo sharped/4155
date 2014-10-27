@@ -46,7 +46,7 @@ for train, valid, test in kf:
 
 """Train & Get Learning Curves"""
 #RBF
-train_sizes, train_scores, test_scores = learning_curve(svm_rbf, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 20))
+train_sizes, train_scores, test_scores = learning_curve(svm_rbf, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 100))
 
 #Calc means
 train_scores_mean = np.mean(train_scores, axis=1)
@@ -98,17 +98,7 @@ plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Validation score
 
 plt.show()
 
-#Plot post-training-test scores
-"""
-NOT WORKING NOW
-rbf_test_scores = []
-linear_test_scores = []
-for train, test in kf_noValid:
-    print svm_rbf.score(iris[test], y[test])
-    rbf_test_scores.append(svm_rbf.score(iris[test, :], y[test]))
-    linear_test_scores.append(svm_lin.score(iris[test, :, y[test]]))
 
-"""
 
 plt.figure()
 plt.title("Comparison of post-training test Results")

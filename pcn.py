@@ -102,14 +102,32 @@ class pcn:
         return train_errorarray/max_train_score, valid_errorarray/max_valid_score
 
         #return self.weights
+
     def pcnfwd(self, inputs):
         """ Run the network forward """
-        # Compute activations
 
+        # Compute activations
         activations = np.dot(inputs, self.weights)
 
         # Threshold the activations
         return np.where(activations > 0, 1, 0)
+
+    def pcn_score(self, inputs, targets):
+
+        out = self.pcnfwd(inputs)
+
+        score = np.ones((targets.shape[0], ))
+        i=0
+        for t_row, a_row in zip(targets, out):
+                if (t_row[0] != a_row[0]) or (t_row[1] != a_row[1]) or (t_row[2] != a_row[2]):
+                    score[i] = 0
+                    print "guess: ", a_row
+                    print "Actual: ", t_row
+
+                i += 1
+
+        #return % correct and array of correct indices
+        return np.sum(score)
 
 
     def confmat(self, inputs, targets):
@@ -124,11 +142,11 @@ class pcn:
 
         if nClasses==1:
             nClasses = 2
-            outputs = np.where(outputs>0,1,0)
+            outputs = np.where(outputs > 0, 1, 0)
         else:
             # 1-of-N encoding
-            outputs = np.argmax(outputs,1)
-            targets = np.argmax(targets,1)
+            outputs = np.argmax(outputs, 1)
+            targets = np.argmax(targets, 1)
 
         cm = np.zeros((nClasses,nClasses))
         for i in range(nClasses):

@@ -23,20 +23,24 @@ indices = np.where(iris[:, 4] == 2)
 targets[indices, 2] = 1
 
 #random shuffle
+"""
 order = range(y.shape[0])
 np.random.shuffle(order)
 iris[:, :4] = iris[order, :4]
 targets[:, :] = targets[order, :]
 y = y[order]
-
+"""
 
 #K-Fold cross-validation sets and training
 nFolds = 10
 kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
+
 #Train models and get lists of errors for each fold
 rbf_train_score = []
 rbf_valid_score = []
+test_scores = []
+test_indexed_results = []
 for train_indices, valid_indices, test_indices in kf:
 
     train = iris[train_indices]
@@ -50,29 +54,41 @@ for train_indices, valid_indices, test_indices in kf:
 
     """RBF"""
     rbfnet = rbf.RBF(train, train_tgt, 10, .5)
-    rbfnet.rbftrain(train, train_tgt, 0.0001, 1000, valid, valid_tgt)
+    rbfnet.rbftrain(train, train_tgt, 0.00001, 1000, valid, valid_tgt)
 
     #Get training and validation scores on this Fold
     rbf_train_score.append(rbfnet.train_error)
     rbf_valid_score.append(rbfnet.valid_error)
 
+    test_results = rbfnet.rbf_score(test, test_tgt)
+    test_scores.append(test_results)
 
-rbf_train_score = np.array(rbf_train_score)
-rbf_valid_score = np.array(rbf_valid_score)
 
-mean_rbf_train_score = np.mean(rbf_train_score, axis=0)
-mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
+    rbf_train_score = np.array(rbf_train_score)
+    rbf_valid_score = np.array(rbf_valid_score)
 
-print mean_rbf_train_score.shape
-plt.figure()
-plt.title("RBF Training and Validation")
-plt.xlabel("Number of Iterations")
-plt.ylabel("Score")
+    mean_rbf_train_score = np.mean(rbf_train_score, axis=0)
+    mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
 
-x = range(rbfnet.train_error.__len__())
+    plt.figure()
+    plt.title("RBF Training and Validation")
+    plt.xlabel("Number of Iterations")
+    plt.ylabel("Score")
 
-plt.plot(x, mean_rbf_train_score, "g", label="Training Score")
-plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
+    x = range(rbfnet.train_error.__len__())
 
-plt.show()
+    plt.plot(x, mean_rbf_train_score, "g", label="Training Score")
+    plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
 
+    #plt.show()
+
+    print test_scores
+    print np.sum(test_scores)
+    scores.append(np.sum(test_scores))
+
+
+
+x = range(0, scores.__len__())
+
+plt.plot(x, scores)
+plt.show

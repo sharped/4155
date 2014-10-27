@@ -127,22 +127,40 @@ class mlp:
         else:
             print "error"
 
-    def confmat(self,inputs,targets):
+    def score(self, inputs, targets):
+
+        # Add the inputs that match the bias node
+        inputs = np.concatenate((inputs, -np.ones((np.shape(inputs)[0], 1))), axis=1)
+        outputs = self.mlpfwd(inputs)
+
+        outputs = np.where(outputs >= 0.5, 1, 0)
+
+        score = 0
+        for row_out, row_targ in zip(outputs, targets):
+            if row_out[0] == row_targ[0] and row_out[1] == row_targ[1] and row_out[2] == row_targ[2]:
+                score += 1
+            else:
+                print "Guess: ", row_out
+                print "Acutal: ",row_targ
+
+        return score
+
+    def confmat(self, inputs, targets):
         """Confusion matrix"""
 
         # Add the inputs that match the bias node
-        inputs = np.concatenate((inputs,-np.ones((np.shape(inputs)[0],1))),axis=1)
+        inputs = np.concatenate((inputs, -np.ones((np.shape(inputs)[0], 1))), axis=1)
         outputs = self.mlpfwd(inputs)
 
         nclasses = np.shape(targets)[1]
 
         if nclasses==1:
             nclasses = 2
-            outputs = np.where(outputs>0.5,1,0)
+            outputs = np.where(outputs > 0.5, 1, 0)
         else:
             # 1-of-N encoding
-            outputs = np.argmax(outputs,1)
-            targets = np.argmax(targets,1)
+            outputs = np.argmax(outputs, 1)
+            targets = np.argmax(targets, 1)
 
         cm = np.zeros((nclasses,nclasses))
         for i in range(nclasses):

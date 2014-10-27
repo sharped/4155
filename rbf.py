@@ -78,6 +78,19 @@ class RBF:
 
         self.train_error, self.valid_error = self.pcn.pcntrainValid(self.hidden[:, :], targets, self.valid_hidden, vtargets, eta, niterations)
 
+    def rbf_score(self, inputs, targets):
+
+        test_hidden = np.ones((inputs.shape[0], self.nRBF))
+        for i in range(self.nRBF):
+            test_hidden[:, i] = np.exp(-np.sum((inputs - np.ones((1, inputs.shape[1]))*self.weights1[:, i])**2, axis=1)/(2*self.sigma**2))
+
+        if self.normalize:
+            test_hidden[:, :-1] /= np.transpose(np.ones((1, self.hidden.shape[0]))*self.hidden[:, :-1].sum(axis=1))
+
+
+        test_hidden = np.concatenate((test_hidden, -np.ones((test_hidden.shape[0], 1))), axis=1)
+
+        return self.pcn.pcn_score(test_hidden, targets)
 
     def rbffwd(self, inputs):
         """ Run the network forward """
