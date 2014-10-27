@@ -61,6 +61,7 @@ for train_indices, valid_indices, test_indices in kf:
 
 
 print test_scores
+print np.sum(test_scores)
 
 mlp_train_score = np.array(mlp_train_score)
 mlp_valid_score = np.array(mlp_valid_score)

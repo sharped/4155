@@ -32,7 +32,7 @@ y = y[order]
 """
 
 #K-Fold cross-validation sets and training
-nFolds = 10
+nFolds = 150
 kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
 
@@ -54,41 +54,39 @@ for train_indices, valid_indices, test_indices in kf:
 
     """RBF"""
     rbfnet = rbf.RBF(train, train_tgt, 10, .5)
-    rbfnet.rbftrain(train, train_tgt, 0.00001, 1000, valid, valid_tgt)
+    rbfnet.rbftrain(train, train_tgt, 0.0001, 1000, valid, valid_tgt)
 
     #Get training and validation scores on this Fold
     rbf_train_score.append(rbfnet.train_error)
     rbf_valid_score.append(rbfnet.valid_error)
 
+    print "FOLD"
     test_results = rbfnet.rbf_score(test, test_tgt)
     test_scores.append(test_results)
 
 
-    rbf_train_score = np.array(rbf_train_score)
-    rbf_valid_score = np.array(rbf_valid_score)
+rbf_train_score = np.array(rbf_train_score)
+rbf_valid_score = np.array(rbf_valid_score)
 
-    mean_rbf_train_score = np.mean(rbf_train_score, axis=0)
-    mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
+mean_rbf_train_score = np.mean(rbf_train_score, axis=0)
+mean_rbf_valid_score = np.mean(rbf_valid_score, axis=0)
 
-    plt.figure()
-    plt.title("RBF Training and Validation")
-    plt.xlabel("Number of Iterations")
-    plt.ylabel("Score")
+plt.figure()
+plt.title("RBF Training and Validation")
+plt.xlabel("Number of Iterations")
+plt.ylabel("Score")
 
-    x = range(rbfnet.train_error.__len__())
+x = range(rbfnet.train_error.__len__())
 
-    plt.plot(x, mean_rbf_train_score, "g", label="Training Score")
-    plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
-
-    #plt.show()
-
-    print test_scores
-    print np.sum(test_scores)
-    scores.append(np.sum(test_scores))
+plt.plot(x, mean_rbf_train_score, "g", label="Training Score")
+plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
 
 
+print test_scores
+print np.sum(test_scores)
 
-x = range(0, scores.__len__())
+plt.legend()
+plt.show()
 
-plt.plot(x, scores)
-plt.show
+
+

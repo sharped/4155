@@ -36,7 +36,7 @@ svm_lin = LinearSVC(C=10)
 svm_rbf = SVC(C=10, kernel="rbf", gamma=0.001)
 
 #K-Fold cross-validation sets and training (Leave 1 out)
-nFolds = 10
+nFolds = 150
 kf = ValidationKFold(iris.shape[0], nFolds, shuffle=True)
 
 #SVM does not use validation set so throw it out
@@ -46,7 +46,9 @@ for train, valid, test in kf:
 
 """Train & Get Learning Curves"""
 #RBF
-train_sizes, train_scores, test_scores = learning_curve(svm_rbf, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 100))
+train_sizes, train_scores, test_scores = learning_curve(svm_rbf, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 50))
+
+print "Linear: ", np.sum(test_scores[49:50])
 
 #Calc means
 train_scores_mean = np.mean(train_scores, axis=1)
@@ -65,14 +67,15 @@ plt.xlabel("Training examples")
 plt.ylabel("Score")
 plt.grid()
 
-plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="r")
-plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="g")
+plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="g")
+plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="r")
 
-plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training score")
-plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Validation score")
+plt.plot(train_sizes, train_scores_mean, 'o-', color="g", label="Training score")
+plt.plot(train_sizes, test_scores_mean, 'o-', color="r", label="Validation score")
+plt.legend()
 
 #Linear
-train_sizes, train_scores, test_scores = learning_curve(svm_lin, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 20))
+train_sizes, train_scores, test_scores = learning_curve(svm_lin, iris[:, :4], y, cv=kf_noValid, train_sizes=np.linspace(.1, 1.0, 50))
 
 #Calc Means
 train_scores_mean = np.mean(train_scores, axis=1)
@@ -81,7 +84,9 @@ test_scores_mean = np.mean(test_scores, axis=1)
 test_scores_std = np.std(test_scores, axis=1)
 
 #Save the final results for later plotting
-linear_test_scores = test_scores[19:20]
+linear_test_scores = test_scores[49:50]
+
+print "RBF: ", np.sum(test_scores[19:20])
 
 #Plotting
 plt.subplot(2, 1, 2)
@@ -90,14 +95,14 @@ plt.xlabel("Training examples")
 plt.ylabel("Score")
 plt.grid()
 
-plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="r")
-plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="g")
+plt.fill_between(train_sizes, train_scores_mean - train_scores_std, train_scores_mean + train_scores_std, alpha=0.1, color="g")
+plt.fill_between(train_sizes, test_scores_mean - test_scores_std, test_scores_mean + test_scores_std, alpha=0.1, color="r")
 
-plt.plot(train_sizes, train_scores_mean, 'o-', color="r", label="Training score")
-plt.plot(train_sizes, test_scores_mean, 'o-', color="g", label="Validation score")
+plt.plot(train_sizes, train_scores_mean, 'o-', color="g", label='Training score')
+plt.plot(train_sizes, test_scores_mean, 'o-', color="r", label='Validation score')
 
+plt.legend()
 plt.show()
-
 
 
 plt.figure()
@@ -112,6 +117,7 @@ x_indices = np.append(rbf_X_indices, linear_X_indices)
 scores = np.append(rbf_test_scores, linear_test_scores)
 
 plt.scatter(x_indices, scores)
+
 
 plt.show()
 

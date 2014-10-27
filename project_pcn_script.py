@@ -72,6 +72,5 @@ plt.plot(x, mean_pcn_train_score, "g", label="Training Score")
 plt.plot(x, mean_pcn_valid_score, "r", label="Validation Score")
 
 
-
 plt.show()
 
