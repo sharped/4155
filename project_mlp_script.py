@@ -81,6 +81,7 @@ x = range(mlpnet.train_scores_list.__len__())
 plt.plot(x, mean_mlp_train_score, "g", label="Training Score")
 plt.plot(x, mean_mlp_valid_score, "r", label="Validation Score")
 
+plt.legend(loc='lower right')
 plt.show()
 
 

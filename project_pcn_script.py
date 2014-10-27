@@ -71,6 +71,6 @@ x = range(pcn_valid_score.shape[1])
 plt.plot(x, mean_pcn_train_score, "g", label="Training Score")
 plt.plot(x, mean_pcn_valid_score, "r", label="Validation Score")
 
-
+plt.legend(loc='lower right')
 plt.show()
 

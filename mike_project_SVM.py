@@ -118,6 +118,6 @@ scores = np.append(rbf_test_scores, linear_test_scores)
 
 plt.scatter(x_indices, scores)
 
-
+plt.legend(loc='lower right')
 plt.show()
 

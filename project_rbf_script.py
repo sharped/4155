@@ -85,7 +85,7 @@ plt.plot(x, mean_rbf_valid_score, "r", label="Validation Score")
 print test_scores
 print np.sum(test_scores)
 
-plt.legend()
+plt.legend(loc='lower right')
 plt.show()
 
 
