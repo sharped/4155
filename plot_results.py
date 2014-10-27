@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+#Each of these results is from a 150-fold CV, 10 of which were done for each model
 svm_rbf = [143.0, 143, 143, 142, 144, 143, 143, 144, 144, 142]
 svm_lin = [140.0, 135, 141, 143, 143, 141, 141, 140, 145, 140]
 
